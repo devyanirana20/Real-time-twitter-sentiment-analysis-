@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Real-Time Sentiment Dashboard</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #111;
+            color: #fff;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #00ffcc;
+        }
+
+        button {
+            padding: 10px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            background: #00ffcc;
+            border: none;
+            color: #000;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid #444;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #222;
+            color: #00ffcc;
+        }
+
+        td {
+            background: #1a1a1a;
+        }
+
+        #table-container {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>🔥 Live Twitter Sentiment Dashboard</h2>
+
+    <button onclick="fetchData()">Refresh Data</button>
+
+    <div id="table-container">Loading...</div>
+
+    <script>
+        async function fetchData() {
+            try {
+                const res = await fetch("http://127.0.0.1:5000/data");
+                const data = await res.json();
+
+                let html = `
+                    <table>
+                        <tr>
+                            <th>Row</th>
+                            <th>Text</th>
+                            <th>Sentiment</th>
+                        </tr>
+                `;
+
+                data.forEach(item => {
+                    html += `
+                        <tr>
+                            <td>${item.row}</td>
+                            <td>${item.text}</td>
+                            <td>${item.sentiment}</td>
+                        </tr>
+                    `;
+                });
+
+                html += `</table>`;
+
+                document.getElementById("table-container").innerHTML = html;
+
+            } catch (err) {
+                document.getElementById("table-container").innerHTML =
+                    "Error fetching data. Is Flask running?";
+            }
+        }
+
+        // auto-load on start
+        fetchData();
+
+        // auto-refresh every 5 seconds
+        setInterval(fetchData, 5000);
+    </script>
+
+</body>
+</html>
